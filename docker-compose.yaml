@@ -1,0 +1,47 @@
+services:
+  pgdatabase:
+    image: postgres:13
+    container_name: pgdatabase
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - "./ny_taxi_postgres_data:/var/lib/postgres/data:rw"
+    ports:
+      - "5432:5432"
+    networks:
+      - pgnetwork
+
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes:
+      - "./pgadmin_conn_data:/var/lib/pgadmin:rw"
+    ports:
+      - "8080:80"
+    networks:
+      - pgnetwork
+
+volumes:
+  pgadmin_conn_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./pgadmin_conn_data
+
+networks:
+  pgnetwork:
+    name: pgnetwork
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+
