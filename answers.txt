@@ -1,0 +1,66 @@
+select * from green_trip limit 10;
+
+select count(1) from green_trip;
+
+select count(1) from taxi_zone_lookup;
+
+select * from taxi_zone_lookup ;
+
+
+
+select count(1) as answer
+from green_trip
+where lpep_dropoff_datetime >= '2019-10-01' and lpep_dropoff_datetime < '2019-11-01' and trip_distance  <= 1
+union all
+select count(1) as miles_upto_1
+from green_trip
+where lpep_dropoff_datetime >= '2019-10-01' and lpep_dropoff_datetime < '2019-11-01' and trip_distance  > 1
+and trip_distance <=3
+union all
+select count(1)
+from green_trip
+where lpep_dropoff_datetime >= '2019-10-01' and lpep_dropoff_datetime < '2019-11-01' and trip_distance  > 3
+and trip_distance <=7
+union all
+select count(1)
+from green_trip
+where lpep_dropoff_datetime >= '2019-10-01' and lpep_dropoff_datetime < '2019-11-01' and trip_distance  > 7
+and trip_distance <=10
+union all
+select count(1)
+from green_trip
+where lpep_dropoff_datetime >= '2019-10-01' and lpep_dropoff_datetime < '2019-11-01' and trip_distance  > 10;
+
+select lpep_pickup_datetime
+from green_trip
+where trip_distance = (select max(trip_distance) from green_trip);
+
+select *  from taxi_zone_lookup limit 1;
+
+select tzl."LocationID"
+from green_trip gt
+join taxi_zone_lookup
+where tzl on gt."PULocationID" = tzl."LocationID"
+where gt.lpep_pickup_datetime::date = '2019-10-18'
+group by 1
+having sum(total_amount) > 13000;
+
+select string_agg(tzl."Zone" , ', ' order by 1) as three_biggest_pickup_zones
+from taxi_zone_lookup tzl 
+where tzl."LocationID" in (
+select gt."PULocationID"
+from green_trip gt
+where lpep_pickup_datetime::date = '2019-10-18'
+group by 1
+having sum(total_amount) > 13000);
+
+
+select tzl."Zone"
+from taxi_zone_lookup tzl
+where tzl."LocationID" = (
+select gt."DOLocationID"
+from taxi_zone_lookup tzl
+join green_trip gt on gt."PULocationID" = tzl."LocationID"
+where gt.lpep_pickup_datetime between '2019-10-01' and '2019-10-31'
+and tzl."Zone" = 'East Harlem North'
+order by gt.tip_amount desc limit 1);
