@@ -63,7 +63,6 @@ if __name__ == "__main__":
     parser.add_argument("--user", help="user name for postgres")
     parser.add_argument("--password", help="password for postgres")
     parser.add_argument("--database", help="database for postgres")
-    parser.add_argument("--table_name", help="table  name in postgres")
     parser.add_argument("--port", help="port for postgres")
     parser.add_argument("--host", help="host for postgres")
     parser.add_argument("--url", help="url for postgres")
